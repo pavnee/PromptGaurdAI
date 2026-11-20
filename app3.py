@@ -26,8 +26,12 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL = "gemini-3.5-flash"
 
 # FIX 1: longer timeout + automatic retries (see analyze_with_gemini)
-REQUEST_TIMEOUT_MS = 120000
-MAX_RETRIES = 3
+REQUEST_TIMEOUT_MS = 60000
+MAX_RETRIES = 2
+
+# SPEED: "minimal" = fastest, "low" = fast + good quality,
+# "medium" = Gemini default (slower), "high" = slowest
+THINKING_LEVEL = "low"
 
 st.set_page_config(
     page_title="PromptGuard AI",
@@ -730,7 +734,12 @@ Return no Markdown code fences.
                 config=types.GenerateContentConfig(
                     temperature=0.2,
                     max_output_tokens=4096,
-                    response_mime_type="application/json"
+                    response_mime_type="application/json",
+                    # SPEED: Gemini 3.5 "thinks" before answering (default
+                    # level is medium). "low" cuts that wait a lot.
+                    thinking_config=types.ThinkingConfig(
+                        thinking_level=THINKING_LEVEL
+                    )
                 )
             )
 
